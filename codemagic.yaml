@@ -6,8 +6,9 @@ workflows:
     integrations:
       app_store_connect: codemagic
     environment:
-      groups:
-        - appstore
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.soumbati.colorclaim
       flutter: stable
       xcode: latest
       cocoapods: default
@@ -18,15 +19,9 @@ workflows:
         script: |
           rm -rf app-src && mkdir app-src
           unzip -q src.zip -d app-src
-      - name: Fetch and create signing files
+      - name: Set up code signing settings on Xcode project
         script: |
           cd app-src
-          app-store-connect fetch-signing-files "$BUNDLE_ID" --type IOS_APP_STORE --certificate-key "@env:CERTIFICATE_PRIVATE_KEY" --create
-      - name: Set up code signing
-        script: |
-          cd app-src
-          keychain initialize
-          keychain add-certificates
           xcode-project use-profiles --warn-only
       - name: Get Flutter packages
         script: |
